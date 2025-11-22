@@ -1,12 +1,215 @@
 ﻿<Window x:Class="WpfApp1.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WpfApp1"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="TechHardware Store" Height="700" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="#f5f5f5">
+
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- HEADER CORREGIDO -->
+        <Border Grid.Row="0" Background="#2C3E50" Padding="15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="🛠️ TechHardware" 
+                          Foreground="White" FontSize="20" FontWeight="Bold"
+                          VerticalAlignment="Center"/>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" 
+                           HorizontalAlignment="Center">
+                    <Button Content="Inicio" Style="{StaticResource NavButton}" Click="Button_Click"/>
+                    <Button Content="Productos" Style="{StaticResource NavButton}"/>
+                    <Button Content="Ofertas" Style="{StaticResource NavButton}"/>
+                    <Button Content="Contacto" Style="{StaticResource NavButton}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button Content="🛒 Carrito (0)" Background="#1ABC9C" 
+                            Foreground="White" BorderThickness="0" Padding="15,8"
+                            FontWeight="SemiBold"/>
+                    <Button Content="👤 Mi Cuenta" Background="#E74C3C" 
+                            Foreground="White" BorderThickness="0" Padding="15,8"
+                            Margin="10,0,0,0" FontWeight="SemiBold"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- SIDEBAR -->
+            <Border Grid.Column="0" Background="White" BorderBrush="#ddd" BorderThickness="0,0,1,0">
+                <ScrollViewer>
+                    <StackPanel Margin="15">
+                        <TextBlock Text="CATEGORÍAS" FontWeight="Bold" 
+                                  Foreground="#2C3E50" Margin="0,0,0,10"/>
+
+                        <ListView x:Name="CategoriesList" BorderThickness="0" 
+                                 Background="Transparent">
+                            <ListViewItem Content="🎮 Todas las GPUs" Padding="5" Cursor="Hand"/>
+                            <ListViewItem Content="💻 Procesadores" Padding="5" Cursor="Hand"/>
+                            <ListViewItem Content="💾 Memorias RAM" Padding="5" Cursor="Hand"/>
+                            <ListViewItem Content="🔌 Placas Madre" Padding="5" Cursor="Hand"/>
+                            <ListViewItem Content="💿 Almacenamiento SSD" Padding="5" Cursor="Hand"/>
+                            <ListViewItem Content="🖥️ Monitores" Padding="5" Cursor="Hand"/>
+                        </ListView>
+
+                        <Separator Margin="0,15" Background="#eee"/>
+
+                        <TextBlock Text="FILTROS" FontWeight="Bold" 
+                                  Foreground="#2C3E50" Margin="0,10,0,5"/>
+
+                        <StackPanel>
+                            <TextBlock Text="Precio máximo:" FontSize="12" Margin="0,5"/>
+                            <Slider Minimum="0" Maximum="2000" Value="500" 
+                                   Margin="0,5" TickFrequency="100"/>
+                            <TextBlock Text="500€" FontSize="11" Foreground="#666" 
+                                      HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- ÁREA DE PRODUCTOS CORREGIDA -->
+            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="20">
+
+                    <!-- BANNER CORREGIDO -->
+                    <Border CornerRadius="10" Margin="0,0,0,20" Height="120">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <GradientStop Color="#667eea" Offset="0"/>
+                                <GradientStop Color="#764ba2" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Grid>
+                            <TextBlock Text="🔥 OFERTAS ESPECIALES EN HARDWARE" 
+                                      Foreground="White" FontSize="24" FontWeight="Bold"
+                                      VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <TextBlock Text="PRODUCTOS DESTACADOS" FontSize="18" FontWeight="Bold" 
+                              Foreground="#2C3E50" Margin="0,0,0,15"/>
+
+                    <ItemsControl x:Name="ProductsItemsControl">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Width="250" Height="350" Background="White" 
+                                       Margin="10" CornerRadius="8"
+                                       BorderBrush="#e0e0e0" BorderThickness="1">
+                                    <Border.Effect>
+                                        <DropShadowEffect ShadowDepth="2" Opacity="0.2"/>
+                                    </Border.Effect>
+
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="150"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <Border Grid.Row="0" Background="#f8f9fa" 
+                                               CornerRadius="8,8,0,0">
+                                            <Image Source="/Images/placeholder.png" 
+                                                   Stretch="Uniform" Margin="20"/>
+                                        </Border>
+
+                                        <StackPanel Grid.Row="1" Margin="10,5">
+                                            <TextBlock Text="{Binding Name}" 
+                                                      FontWeight="Bold" FontSize="14"
+                                                      TextWrapping="Wrap" MaxHeight="40"
+                                                      Foreground="#2C3E50"/>
+                                            <TextBlock Text="{Binding Brand}" 
+                                                      FontSize="12" Foreground="#7F8C8D"
+                                                      Margin="0,2,0,0"/>
+                                            <TextBlock Text="{Binding Specification}" 
+                                                      FontSize="11" Foreground="#95A5A6"
+                                                      TextWrapping="Wrap" Margin="0,5,0,0"/>
+                                        </StackPanel>
+
+                                        <Border Grid.Row="2" Background="#1ABC9C" 
+                                               Margin="10,5" CornerRadius="3">
+                                            <TextBlock Text="{Binding Price, StringFormat='{}{0:C}'}" 
+                                                      Foreground="White" FontWeight="Bold"
+                                                      FontSize="16" TextAlignment="Center"
+                                                      Padding="5"/>
+                                        </Border>
+
+                                        <StackPanel Grid.Row="3" Orientation="Horizontal" 
+                                                   Margin="10" HorizontalAlignment="Center">
+                                            <Button Content="🛒 Carrito" 
+                                                   Background="#3498DB" Foreground="White"
+                                                   BorderThickness="0" Padding="15,5"
+                                                   FontSize="12" Cursor="Hand"/>
+                                            <Button Content="👀 Ver" 
+                                                   Background="#95A5A6" Foreground="White"
+                                                   BorderThickness="0" Padding="15,5" 
+                                                   Margin="5,0,0,0" FontSize="12" Cursor="Hand"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- FOOTER -->
+        <Border Grid.Row="2" Background="#34495E" Padding="15">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="🛠️ TechHardware" Foreground="White" FontWeight="Bold"/>
+                    <TextBlock Text="Tu tienda de confianza para componentes PC" 
+                              Foreground="#BDC3C7" FontSize="11" Margin="0,5,0,0"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1">
+                    <TextBlock Text="Contacto" Foreground="White" FontWeight="Bold"/>
+                    <TextBlock Text="info@techhardware.com" Foreground="#BDC3C7" FontSize="11"/>
+                    <TextBlock Text="+34 912 345 678" Foreground="#BDC3C7" FontSize="11"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2">
+                    <TextBlock Text="Síguenos" Foreground="White" FontWeight="Bold"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+                        <TextBlock Text="📘" FontSize="14" Cursor="Hand" Margin="0,0,10,0"/>
+                        <TextBlock Text="🐦" FontSize="14" Cursor="Hand" Margin="0,0,10,0"/>
+                        <TextBlock Text="📷" FontSize="14" Cursor="Hand"/>
+                    </StackPanel>
+                </StackPanel>
+
+            </Grid>
+        </Border>
     </Grid>
 </Window>
+    
+    
