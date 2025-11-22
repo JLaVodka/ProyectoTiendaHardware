@@ -4,146 +4,160 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WpfApp1
 {
-    internal class Clases
+    public class Producto : INotifyPropertyChanged
     {
-        public class Producto : INotifyPropertyChanged
+        private int _id;
+        private string _nombre;
+        private string _marca;
+        private string _categoria;
+        private decimal _precio;
+        private string _especificaciones;
+        private int _stock;
+
+        public int Id
         {
-            private int _id;
-            private string _nombre;
-            private string _descripcion;
-            private decimal _precio;
-            private int _stock;
-            private int _categoriaId;
-            private string _imagen;
-
-            public int Id
-            {
-                get => _id;
-                set { _id = value; OnPropertyChanged(nameof(Id)); }
-            }
-
-            public string Nombre
-            {
-                get => _nombre;
-                set { _nombre = value; OnPropertyChanged(nameof(Nombre)); }
-            }
-
-            public string Descripcion
-            {
-                get => _descripcion;
-                set { _descripcion = value; OnPropertyChanged(nameof(Descripcion)); }
-            }
-
-            public decimal Precio
-            {
-                get => _precio;
-                set { _precio = value; OnPropertyChanged(nameof(Precio)); }
-            }
-
-            public int Stock
-            {
-                get => _stock;
-                set { _stock = value; OnPropertyChanged(nameof(Stock)); }
-            }
-
-            public int CategoriaId
-            {
-                get => _categoriaId;
-                set { _categoriaId = value; OnPropertyChanged(nameof(CategoriaId)); }
-            }
-
-            public string Imagen
-            {
-                get => _imagen;
-                set { _imagen = value; OnPropertyChanged(nameof(Imagen)); }
-            }
-
-            public event PropertyChangedEventHandler PropertyChanged;
-            protected virtual void OnPropertyChanged(string propertyName)
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
+            get => _id;
+            set { _id = value; OnPropertyChanged(nameof(Id)); }
         }
 
-        public class Categoria
+        public string Nombre
         {
-            public int Id { get; set; }
-            public string Nombre { get; set; }
+            get => _nombre;
+            set { _nombre = value; OnPropertyChanged(nameof(Nombre)); }
         }
 
-        public class Cliente
+        public string Marca
         {
-            public int Id { get; set; }
-            public string Nombre { get; set; }
-            public string Email { get; set; }
-            public string Telefono { get; set; }
-            public string Direccion { get; set; }
+            get => _marca;
+            set { _marca = value; OnPropertyChanged(nameof(Marca)); }
         }
 
-        public class Pedido
+        public string Categoria
         {
-            public int Id { get; set; }
-            public int ClienteId { get; set; }
-            public DateTime FechaPedido { get; set; }
-            public decimal Total { get; set; }
-            public string Estado { get; set; }
+            get => _categoria;
+            set { _categoria = value; OnPropertyChanged(nameof(Categoria)); }
         }
 
-        public class DetallePedido
+        public decimal Precio
         {
-            public int Id { get; set; }
-            public int PedidoId { get; set; }
-            public int ProductoId { get; set; }
-            public int Cantidad { get; set; }
-            public decimal PrecioUnitario { get; set; }
+            get => _precio;
+            set { _precio = value; OnPropertyChanged(nameof(Precio)); }
         }
 
-        public class CarritoItem
+        public string Especificaciones
         {
-            public int ProductoId { get; set; }
-            public string Nombre { get; set; }
-            public decimal Precio { get; set; }
-            public int Cantidad { get; set; }
-            public decimal Subtotal => Precio * Cantidad;
+            get => _especificaciones;
+            set { _especificaciones = value; OnPropertyChanged(nameof(Especificaciones)); }
         }
 
-        public class DatabaseConnection
+        public int Stock
         {
-            private readonly string _connectionString;
+            get => _stock;
+            set { _stock = value; OnPropertyChanged(nameof(Stock)); }
+        }
 
-            public DatabaseConnection()
+        public bool IsAvailable => Stock > 0;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    public class Categoria
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+    }
+
+    public class Cliente
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public string Email { get; set; }
+        public string Telefono { get; set; }
+        public string Direccion { get; set; }
+    }
+
+    public class Pedido
+    {
+        public int Id { get; set; }
+        public int ClienteId { get; set; }
+        public DateTime FechaPedido { get; set; }
+        public decimal Total { get; set; }
+        public string Estado { get; set; }
+    }
+
+    public class DetallePedido
+    {
+        public int Id { get; set; }
+        public int PedidoId { get; set; }
+        public int ProductoId { get; set; }
+        public int Cantidad { get; set; }
+        public decimal PrecioUnitario { get; set; }
+    }
+
+    public class CarritoItem : INotifyPropertyChanged
+    {
+        private int _cantidad;
+
+        public int ProductoId { get; set; }
+        public string Nombre { get; set; }
+        public decimal Precio { get; set; }
+
+        public int Cantidad
+        {
+            get => _cantidad;
+            set { _cantidad = value; OnPropertyChanged(nameof(Cantidad)); OnPropertyChanged(nameof(Subtotal)); }
+        }
+
+        public decimal Subtotal => Precio * Cantidad;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    public class DatabaseConnection
+    {
+        private readonly string _connectionString;
+
+        public DatabaseConnection()
+        {
+            _connectionString = "Server=localhost;Database=tiendahardware;Uid=root;Pwd=;";
+        }
+
+        public MySqlConnection GetConnection()
+        {
+            return new MySqlConnection(_connectionString);
+        }
+    }
+
+    public class ProductoRepository
+    {
+        private readonly DatabaseConnection _dbConnection;
+
+        public ProductoRepository()
+        {
+            _dbConnection = new DatabaseConnection();
+        }
+
+        public List<Producto> GetAllProductos()
+        {
+            var productos = new List<Producto>();
+
+            using (var connection = _dbConnection.GetConnection())
             {
-                _connectionString = "Server=localhost;Database=tiendahardware;Uid=root;Pwd=;SslMode=none;";
-            }
-
-            public MySqlConnection GetConnection()
-            {
-                return new MySqlConnection(_connectionString);
-            }
-        }
-
-        public class ProductoRepository
-        {
-            private readonly DatabaseConnection _dbConnection;
-
-            public ProductoRepository()
-            {
-                _dbConnection = new DatabaseConnection();
-            }
-
-            public List<Producto> GetAllProductos()
-            {
-                var productos = new List<Producto>();
-
-                using (var connection = _dbConnection.GetConnection())
+                try
                 {
                     connection.Open();
-                    string query = "SELECT * FROM productos";
+                    string query = "SELECT id_producto, nombre_productos, precio, categoria, especificaciones, stock_producto, marca_productos FROM productos";
 
                     using (var command = new MySqlCommand(query, connection))
                     {
@@ -153,346 +167,309 @@ namespace WpfApp1
                             {
                                 productos.Add(new Producto
                                 {
-                                    Id = reader.GetInt32("id"),
-                                    Nombre = reader.GetString("nombre"),
-                                    Descripcion = reader.GetString("descripcion"),
+                                    Id = reader.GetInt32("id_producto"),
+                                    Nombre = reader.GetString("nombre_productos"),
+                                    Marca = reader.GetString("marca_productos"),
+                                    Categoria = reader.GetString("categoria"),
                                     Precio = reader.GetDecimal("precio"),
-                                    Stock = reader.GetInt32("stock"),
-                                    CategoriaId = reader.GetInt32("categoria_id"),
-                                    Imagen = reader.IsDBNull(reader.GetOrdinal("imagen")) ?
-                                             null : reader.GetString("imagen")
+                                    Especificaciones = reader.GetString("especificaciones"),
+                                    Stock = reader.GetInt32("stock_producto")
                                 });
                             }
                         }
                     }
                 }
-                return productos;
-            }
-
-            public Producto GetProductoById(int id)
-            {
-                using (var connection = _dbConnection.GetConnection())
+                catch (Exception ex)
                 {
-                    connection.Open();
-                    string query = "SELECT * FROM productos WHERE id = @id";
+                    System.Windows.MessageBox.Show("Error al cargar productos: " + ex.Message);
+                }
+            }
+            return productos;
+        }
 
-                    using (var command = new MySqlCommand(query, connection))
+        public Producto GetProductoById(int id)
+        {
+            using (var connection = _dbConnection.GetConnection())
+            {
+                connection.Open();
+                string query = "SELECT id_producto, nombre_productos, precio, categoria, especificaciones, stock_producto, marca_productos FROM productos WHERE id_producto = @id";
+
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+
+                    using (var reader = command.ExecuteReader())
                     {
-                        command.Parameters.AddWithValue("@id", id);
-
-                        using (var reader = command.ExecuteReader())
+                        if (reader.Read())
                         {
-                            if (reader.Read())
+                            return new Producto
                             {
-                                return new Producto
-                                {
-                                    Id = reader.GetInt32("id"),
-                                    Nombre = reader.GetString("nombre"),
-                                    Descripcion = reader.GetString("descripcion"),
-                                    Precio = reader.GetDecimal("precio"),
-                                    Stock = reader.GetInt32("stock"),
-                                    CategoriaId = reader.GetInt32("categoria_id"),
-                                    Imagen = reader.IsDBNull(reader.GetOrdinal("imagen")) ?
-                                             null : reader.GetString("imagen")
-                                };
-                            }
+                                Id = reader.GetInt32("id_producto"),
+                                Nombre = reader.GetString("nombre_productos"),
+                                Marca = reader.GetString("marca_productos"),
+                                Categoria = reader.GetString("categoria"),
+                                Precio = reader.GetDecimal("precio"),
+                                Especificaciones = reader.GetString("especificaciones"),
+                                Stock = reader.GetInt32("stock_producto")
+                            };
                         }
                     }
                 }
-                return null;
             }
+            return null;
+        }
 
-            public void AddProducto(Producto producto)
+        public List<Producto> GetProductosByCategoria(string categoria)
+        {
+            var productos = new List<Producto>();
+
+            using (var connection = _dbConnection.GetConnection())
             {
-                using (var connection = _dbConnection.GetConnection())
+                connection.Open();
+                string query = "SELECT id_producto, nombre_productos, precio, categoria, especificaciones, stock_producto, marca_productos FROM productos WHERE categoria = @categoria";
+
+                using (var command = new MySqlCommand(query, connection))
                 {
-                    connection.Open();
-                    string query = @"INSERT INTO productos 
-                               (nombre, descripcion, precio, stock, categoria_id, imagen) 
-                               VALUES (@nombre, @descripcion, @precio, @stock, @categoriaId, @imagen)";
+                    command.Parameters.AddWithValue("@categoria", categoria);
 
-                    using (var command = new MySqlCommand(query, connection))
+                    using (var reader = command.ExecuteReader())
                     {
-                        command.Parameters.AddWithValue("@nombre", producto.Nombre);
-                        command.Parameters.AddWithValue("@descripcion", producto.Descripcion);
-                        command.Parameters.AddWithValue("@precio", producto.Precio);
-                        command.Parameters.AddWithValue("@stock", producto.Stock);
-                        command.Parameters.AddWithValue("@categoriaId", producto.CategoriaId);
-                        command.Parameters.AddWithValue("@imagen", producto.Imagen ?? (object)DBNull.Value);
-
-                        command.ExecuteNonQuery();
+                        while (reader.Read())
+                        {
+                            productos.Add(new Producto
+                            {
+                                Id = reader.GetInt32("id_producto"),
+                                Nombre = reader.GetString("nombre_productos"),
+                                Marca = reader.GetString("marca_productos"),
+                                Categoria = reader.GetString("categoria"),
+                                Precio = reader.GetDecimal("precio"),
+                                Especificaciones = reader.GetString("especificaciones"),
+                                Stock = reader.GetInt32("stock_producto")
+                            });
+                        }
                     }
                 }
             }
+            return productos;
+        }
 
-            public void UpdateProducto(Producto producto)
+        public void AddProducto(Producto producto)
+        {
+            using (var connection = _dbConnection.GetConnection())
             {
-                using (var connection = _dbConnection.GetConnection())
+                connection.Open();
+                string query = @"INSERT INTO productos 
+                               (nombre_productos, marca_productos, categoria, precio, especificaciones, stock_producto) 
+                               VALUES (@nombre, @marca, @categoria, @precio, @especificaciones, @stock)";
+
+                using (var command = new MySqlCommand(query, connection))
                 {
-                    connection.Open();
-                    string query = @"UPDATE productos SET 
-                               nombre = @nombre, 
-                               descripcion = @descripcion, 
+                    command.Parameters.AddWithValue("@nombre", producto.Nombre);
+                    command.Parameters.AddWithValue("@marca", producto.Marca);
+                    command.Parameters.AddWithValue("@categoria", producto.Categoria);
+                    command.Parameters.AddWithValue("@precio", producto.Precio);
+                    command.Parameters.AddWithValue("@especificaciones", producto.Especificaciones);
+                    command.Parameters.AddWithValue("@stock", producto.Stock);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void UpdateProducto(Producto producto)
+        {
+            using (var connection = _dbConnection.GetConnection())
+            {
+                connection.Open();
+                string query = @"UPDATE productos SET 
+                               nombre_productos = @nombre, 
+                               marca_productos = @marca, 
+                               categoria = @categoria, 
                                precio = @precio, 
-                               stock = @stock, 
-                               categoria_id = @categoriaId,
-                               imagen = @imagen
-                               WHERE id = @id";
+                               especificaciones = @especificaciones,
+                               stock_producto = @stock
+                               WHERE id_producto = @id";
 
-                    using (var command = new MySqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@nombre", producto.Nombre);
-                        command.Parameters.AddWithValue("@descripcion", producto.Descripcion);
-                        command.Parameters.AddWithValue("@precio", producto.Precio);
-                        command.Parameters.AddWithValue("@stock", producto.Stock);
-                        command.Parameters.AddWithValue("@categoriaId", producto.CategoriaId);
-                        command.Parameters.AddWithValue("@imagen", producto.Imagen ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@id", producto.Id);
-
-                        command.ExecuteNonQuery();
-                    }
-                }
-            }
-
-            public void DeleteProducto(int id)
-            {
-                using (var connection = _dbConnection.GetConnection())
+                using (var command = new MySqlCommand(query, connection))
                 {
-                    connection.Open();
-                    string query = "DELETE FROM productos WHERE id = @id";
+                    command.Parameters.AddWithValue("@nombre", producto.Nombre);
+                    command.Parameters.AddWithValue("@marca", producto.Marca);
+                    command.Parameters.AddWithValue("@categoria", producto.Categoria);
+                    command.Parameters.AddWithValue("@precio", producto.Precio);
+                    command.Parameters.AddWithValue("@especificaciones", producto.Especificaciones);
+                    command.Parameters.AddWithValue("@stock", producto.Stock);
+                    command.Parameters.AddWithValue("@id", producto.Id);
 
-                    using (var command = new MySqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@id", id);
-                        command.ExecuteNonQuery();
-                    }
+                    command.ExecuteNonQuery();
                 }
-            }
-
-            public List<Producto> GetProductosByCategoria(int categoriaId)
-            {
-                var productos = new List<Producto>();
-
-                using (var connection = _dbConnection.GetConnection())
-                {
-                    connection.Open();
-                    string query = "SELECT * FROM productos WHERE categoria_id = @categoriaId";
-
-                    using (var command = new MySqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@categoriaId", categoriaId);
-
-                        using (var reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                productos.Add(new Producto
-                                {
-                                    Id = reader.GetInt32("id"),
-                                    Nombre = reader.GetString("nombre"),
-                                    Descripcion = reader.GetString("descripcion"),
-                                    Precio = reader.GetDecimal("precio"),
-                                    Stock = reader.GetInt32("stock"),
-                                    CategoriaId = reader.GetInt32("categoria_id"),
-                                    Imagen = reader.IsDBNull(reader.GetOrdinal("imagen")) ?
-                                             null : reader.GetString("imagen")
-                                });
-                            }
-                        }
-                    }
-                }
-                return productos;
             }
         }
 
-        public class CategoriaRepository
+        public void DeleteProducto(int id)
         {
-            private readonly DatabaseConnection _dbConnection;
-
-            public CategoriaRepository()
+            using (var connection = _dbConnection.GetConnection())
             {
-                _dbConnection = new DatabaseConnection();
-            }
+                connection.Open();
+                string query = "DELETE FROM productos WHERE id_producto = @id";
 
-            public List<Categoria> GetAllCategorias()
-            {
-                var categorias = new List<Categoria>();
-
-                using (var connection = _dbConnection.GetConnection())
+                using (var command = new MySqlCommand(query, connection))
                 {
-                    connection.Open();
-                    string query = "SELECT * FROM categorias";
+                    command.Parameters.AddWithValue("@id", id);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+    }
 
-                    using (var command = new MySqlCommand(query, connection))
+    public class CategoriaRepository
+    {
+        private readonly DatabaseConnection _dbConnection;
+
+        public CategoriaRepository()
+        {
+            _dbConnection = new DatabaseConnection();
+        }
+
+        public List<Categoria> GetAllCategorias()
+        {
+            var categorias = new List<Categoria>();
+
+            using (var connection = _dbConnection.GetConnection())
+            {
+                connection.Open();
+                string query = "SELECT * FROM categorias";
+
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    using (var reader = command.ExecuteReader())
                     {
-                        using (var reader = command.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            categorias.Add(new Categoria
                             {
-                                categorias.Add(new Categoria
-                                {
-                                    Id = reader.GetInt32("id"),
-                                    Nombre = reader.GetString("nombre")
-                                });
-                            }
+                                Id = reader.GetInt32("id"),
+                                Nombre = reader.GetString("nombre")
+                            });
                         }
                     }
                 }
-                return categorias;
+            }
+            return categorias;
+        }
+    }
+
+    public class ProductoViewModel : INotifyPropertyChanged
+    {
+        private readonly ProductoRepository _productoRepository;
+        private ObservableCollection<Producto> _productos;
+        private List<CarritoItem> _carrito;
+        private int _itemsCarrito;
+
+        public ProductoViewModel()
+        {
+            _productoRepository = new ProductoRepository();
+            _carrito = new List<CarritoItem>();
+            CargarProductos();
+        }
+
+        public ObservableCollection<Producto> Productos
+        {
+            get => _productos;
+            set
+            {
+                _productos = value;
+                OnPropertyChanged(nameof(Productos));
             }
         }
 
-        public class ProductoViewModel : INotifyPropertyChanged
+        public List<CarritoItem> Carrito
         {
-            private readonly ProductoRepository _productoRepository;
-            private readonly CategoriaRepository _categoriaRepository;
-            private ObservableCollection<Producto> _productos;
-            private ObservableCollection<Categoria> _categorias;
-            private Producto _productoSeleccionado;
-            private List<CarritoItem> _carrito;
-
-            public ProductoViewModel()
+            get => _carrito;
+            set
             {
-                _productoRepository = new ProductoRepository();
-                _categoriaRepository = new CategoriaRepository();
-                _carrito = new List<CarritoItem>();
-                CargarProductos();
-                CargarCategorias();
-                ProductoSeleccionado = new Producto();
-            }
-
-            public ObservableCollection<Producto> Productos
-            {
-                get => _productos;
-                set
-                {
-                    _productos = value;
-                    OnPropertyChanged(nameof(Productos));
-                }
-            }
-
-            public ObservableCollection<Categoria> Categorias
-            {
-                get => _categorias;
-                set
-                {
-                    _categorias = value;
-                    OnPropertyChanged(nameof(Categorias));
-                }
-            }
-
-            public Producto ProductoSeleccionado
-            {
-                get => _productoSeleccionado;
-                set
-                {
-                    _productoSeleccionado = value;
-                    OnPropertyChanged(nameof(ProductoSeleccionado));
-                }
-            }
-
-            public List<CarritoItem> Carrito
-            {
-                get => _carrito;
-                set
-                {
-                    _carrito = value;
-                    OnPropertyChanged(nameof(Carrito));
-                    OnPropertyChanged(nameof(TotalCarrito));
-                }
-            }
-
-            public decimal TotalCarrito
-            {
-                get
-                {
-                    decimal total = 0;
-                    foreach (var item in Carrito)
-                    {
-                        total += item.Subtotal;
-                    }
-                    return total;
-                }
-            }
-
-            private void CargarProductos()
-            {
-                Productos = new ObservableCollection<Producto>(_productoRepository.GetAllProductos());
-            }
-
-            private void CargarCategorias()
-            {
-                Categorias = new ObservableCollection<Categoria>(_categoriaRepository.GetAllCategorias());
-            }
-
-            public void GuardarProducto()
-            {
-                if (ProductoSeleccionado.Id == 0)
-                {
-                    _productoRepository.AddProducto(ProductoSeleccionado);
-                }
-                else
-                {
-                    _productoRepository.UpdateProducto(ProductoSeleccionado);
-                }
-                CargarProductos();
-                ProductoSeleccionado = new Producto();
-            }
-
-            public void EliminarProducto()
-            {
-                if (ProductoSeleccionado != null && ProductoSeleccionado.Id > 0)
-                {
-                    _productoRepository.DeleteProducto(ProductoSeleccionado.Id);
-                    CargarProductos();
-                    ProductoSeleccionado = new Producto();
-                }
-            }
-
-            public void AgregarAlCarrito(Producto producto, int cantidad = 1)
-            {
-                var itemExistente = Carrito.Find(item => item.ProductoId == producto.Id);
-                if (itemExistente != null)
-                {
-                    itemExistente.Cantidad += cantidad;
-                }
-                else
-                {
-                    Carrito.Add(new CarritoItem
-                    {
-                        ProductoId = producto.Id,
-                        Nombre = producto.Nombre,
-                        Precio = producto.Precio,
-                        Cantidad = cantidad
-                    });
-                }
+                _carrito = value;
                 OnPropertyChanged(nameof(Carrito));
                 OnPropertyChanged(nameof(TotalCarrito));
+                ItemsCarrito = _carrito.Sum(item => item.Cantidad);
             }
+        }
 
-            public void RemoverDelCarrito(int productoId)
+        public int ItemsCarrito
+        {
+            get => _itemsCarrito;
+            set
             {
-                var item = Carrito.Find(i => i.ProductoId == productoId);
-                if (item != null)
+                _itemsCarrito = value;
+                OnPropertyChanged(nameof(ItemsCarrito));
+            }
+        }
+
+        public decimal TotalCarrito => Carrito.Sum(item => item.Subtotal);
+
+        private void CargarProductos()
+        {
+            Productos = new ObservableCollection<Producto>(_productoRepository.GetAllProductos());
+        }
+
+        public void CargarProductosPorCategoria(string categoria)
+        {
+            if (categoria == "Todas las GPUs" || categoria == "Todos")
+            {
+                CargarProductos();
+            }
+            else
+            {
+                var productosFiltrados = _productoRepository.GetProductosByCategoria(categoria);
+                Productos = new ObservableCollection<Producto>(productosFiltrados);
+            }
+        }
+
+        public void AgregarAlCarrito(Producto producto, int cantidad = 1)
+        {
+            var itemExistente = Carrito.Find(item => item.ProductoId == producto.Id);
+            if (itemExistente != null)
+            {
+                itemExistente.Cantidad += cantidad;
+            }
+            else
+            {
+                Carrito.Add(new CarritoItem
                 {
-                    Carrito.Remove(item);
-                    OnPropertyChanged(nameof(Carrito));
-                    OnPropertyChanged(nameof(TotalCarrito));
-                }
+                    ProductoId = producto.Id,
+                    Nombre = producto.Nombre,
+                    Precio = producto.Precio,
+                    Cantidad = cantidad
+                });
             }
+            OnPropertyChanged(nameof(Carrito));
+            OnPropertyChanged(nameof(TotalCarrito));
+            ItemsCarrito = Carrito.Sum(item => item.Cantidad);
+        }
 
-            public void LimpiarCarrito()
+        public void RemoverDelCarrito(int productoId)
+        {
+            var item = Carrito.Find(i => i.ProductoId == productoId);
+            if (item != null)
             {
-                Carrito.Clear();
+                Carrito.Remove(item);
                 OnPropertyChanged(nameof(Carrito));
                 OnPropertyChanged(nameof(TotalCarrito));
+                ItemsCarrito = Carrito.Sum(Item => item.Cantidad);
             }
+        }
 
-            public event PropertyChangedEventHandler PropertyChanged;
-            protected virtual void OnPropertyChanged(string propertyName)
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
+        public void LimpiarCarrito()
+        {
+            Carrito.Clear();
+            OnPropertyChanged(nameof(Carrito));
+            OnPropertyChanged(nameof(TotalCarrito));
+            ItemsCarrito = 0;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

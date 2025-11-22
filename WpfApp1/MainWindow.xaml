@@ -5,6 +5,22 @@
         WindowStartupLocation="CenterScreen"
         Background="#f5f5f5">
 
+    <!-- ESTILOS NECESARIOS -->
+    <Window.Resources>
+
+        <!-- Estilo NavButton (corregido) -->
+        <Style x:Key="NavButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="10,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+    </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -12,7 +28,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- HEADER CORREGIDO -->
+        <!-- HEADER -->
         <Border Grid.Row="0" Background="#2C3E50" Padding="15">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -27,19 +43,16 @@
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" 
                            HorizontalAlignment="Center">
-                    <Button Content="Inicio" Style="{StaticResource NavButton}" Click="Button_Click"/>
-                    <Button Content="Productos" Style="{StaticResource NavButton}"/>
-                    <Button Content="Ofertas" Style="{StaticResource NavButton}"/>
-                    <Button Content="Contacto" Style="{StaticResource NavButton}"/>
+                    <Button x:Name="BtnInicio" Content="Inicio" Style="{StaticResource NavButton}" Click="Button_Click"/>
+                    <Button x:Name="BtnProductos" Content="Productos" Style="{StaticResource NavButton}" Click="BtnProductos_Click"/>
+                    <Button x:Name="BtnOfertas" Content="Ofertas" Style="{StaticResource NavButton}" Click="BtnOfertas_Click"/>
+                    <Button x:Name="BtnContacto" Content="Contacto" Style="{StaticResource NavButton}" Click="BtnContacto_Click"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <Button Content="🛒 Carrito (0)" Background="#1ABC9C" 
+                    <Button x:Name="Carrito" Content="🛒 Carrito (0)" Background="#1ABC9C" 
                             Foreground="White" BorderThickness="0" Padding="15,8"
-                            FontWeight="SemiBold"/>
-                    <Button Content="👤 Mi Cuenta" Background="#E74C3C" 
-                            Foreground="White" BorderThickness="0" Padding="15,8"
-                            Margin="10,0,0,0" FontWeight="SemiBold"/>
+                            FontWeight="SemiBold" Click="Carrito_Click"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -48,7 +61,9 @@
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="376*"/>
+                <ColumnDefinition Width="35*"/>
+                <ColumnDefinition Width="589*"/>
             </Grid.ColumnDefinitions>
 
             <!-- SIDEBAR -->
@@ -60,12 +75,12 @@
 
                         <ListView x:Name="CategoriesList" BorderThickness="0" 
                                  Background="Transparent">
-                            <ListViewItem Content="🎮 Todas las GPUs" Padding="5" Cursor="Hand"/>
-                            <ListViewItem Content="💻 Procesadores" Padding="5" Cursor="Hand"/>
-                            <ListViewItem Content="💾 Memorias RAM" Padding="5" Cursor="Hand"/>
-                            <ListViewItem Content="🔌 Placas Madre" Padding="5" Cursor="Hand"/>
-                            <ListViewItem Content="💿 Almacenamiento SSD" Padding="5" Cursor="Hand"/>
-                            <ListViewItem Content="🖥️ Monitores" Padding="5" Cursor="Hand"/>
+                            <ListViewItem x:Name="FiltGPU" Content="🎮 Todas las GPUs" Padding="5" Cursor="Hand" Selected="FiltGPU_Selected"/>
+                            <ListViewItem x:Name="FiltCPU" Content="💻 Procesadores" Padding="5" Cursor="Hand" Selected="FiltCPU_Selected"/>
+                            <ListViewItem x:Name="FiltRAM" Content="💾 Memorias RAM" Padding="5" Cursor="Hand" Selected="FiltRAM_Selected"/>
+                            <ListViewItem x:Name="FiltMthr" Content="🔌 Placas Madre" Padding="5" Cursor="Hand" Selected="FiltMthr_Selected"/>
+                            <ListViewItem x:Name="FiltSSD" Content="💿 Almacenamiento SSD" Padding="5" Cursor="Hand" Selected="FiltSSD_Selected"/>
+                            <ListViewItem x:Name="FiltMon" Content="🖥️ Monitores" Padding="5" Cursor="Hand" Selected="FiltMon_Selected"/>
                         </ListView>
 
                         <Separator Margin="0,15" Background="#eee"/>
@@ -84,11 +99,10 @@
                 </ScrollViewer>
             </Border>
 
-            <!-- ÁREA DE PRODUCTOS CORREGIDA -->
-            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <!-- ÁREA DE PRODUCTOS -->
+            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="3">
                 <StackPanel Margin="20">
 
-                    <!-- BANNER CORREGIDO -->
                     <Border CornerRadius="10" Margin="0,0,0,20" Height="120">
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -195,7 +209,7 @@
                 <StackPanel Grid.Column="1">
                     <TextBlock Text="Contacto" Foreground="White" FontWeight="Bold"/>
                     <TextBlock Text="info@techhardware.com" Foreground="#BDC3C7" FontSize="11"/>
-                    <TextBlock Text="+34 912 345 678" Foreground="#BDC3C7" FontSize="11"/>
+                    <TextBlock Text="+57 302 554 1514" Foreground="#BDC3C7" FontSize="11"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="2">
@@ -211,5 +225,3 @@
         </Border>
     </Grid>
 </Window>
-    
-    
