@@ -8,7 +8,7 @@
     <!-- ESTILOS NECESARIOS -->
     <Window.Resources>
 
-        <!-- Estilo NavButton (corregido) -->
+        <!-- Estilo NavButton -->
         <Style x:Key="NavButton" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="White"/>
@@ -44,7 +44,6 @@
                 <StackPanel Grid.Column="1" Orientation="Horizontal" 
                            HorizontalAlignment="Center">
                     <Button x:Name="BtnInicio" Content="Inicio" Style="{StaticResource NavButton}" Click="Button_Click"/>
-                    <Button x:Name="BtnProductos" Content="Productos" Style="{StaticResource NavButton}" Click="BtnProductos_Click"/>
                     <Button x:Name="BtnOfertas" Content="Ofertas" Style="{StaticResource NavButton}" Click="BtnOfertas_Click"/>
                     <Button x:Name="BtnContacto" Content="Contacto" Style="{StaticResource NavButton}" Click="BtnContacto_Click"/>
                 </StackPanel>
@@ -90,9 +89,9 @@
 
                         <StackPanel>
                             <TextBlock Text="Precio máximo:" FontSize="12" Margin="0,5"/>
-                            <Slider Minimum="0" Maximum="2000" Value="500" 
-                                   Margin="0,5" TickFrequency="100"/>
-                            <TextBlock Text="500€" FontSize="11" Foreground="#666" 
+                            <Slider x:Name="SliderPrecio" Minimum="0" Maximum="5000000" Value="120000" 
+                                   Margin="0,5" TickFrequency="10000" ValueChanged="PrecioSlider_ValueChanged"/>
+                            <TextBlock x:Name="Monto" Text="" FontSize="11" Foreground="#666" 
                                       HorizontalAlignment="Center"/>
                         </StackPanel>
                     </StackPanel>
@@ -120,7 +119,8 @@
                     <TextBlock Text="PRODUCTOS DESTACADOS" FontSize="18" FontWeight="Bold" 
                               Foreground="#2C3E50" Margin="0,0,0,15"/>
 
-                    <ItemsControl x:Name="ProductsItemsControl">
+                    <ItemsControl x:Name="ProductsItemsControl"
+                                  ItemsSource="{Binding Productos}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <WrapPanel Orientation="Horizontal"/>
@@ -151,21 +151,23 @@
                                         </Border>
 
                                         <StackPanel Grid.Row="1" Margin="10,5">
-                                            <TextBlock Text="{Binding Name}" 
+                                            <TextBlock Text="{Binding Nombre}" 
                                                       FontWeight="Bold" FontSize="14"
                                                       TextWrapping="Wrap" MaxHeight="40"
                                                       Foreground="#2C3E50"/>
-                                            <TextBlock Text="{Binding Brand}" 
+
+                                            <TextBlock Text="{Binding Marca}" 
                                                       FontSize="12" Foreground="#7F8C8D"
                                                       Margin="0,2,0,0"/>
-                                            <TextBlock Text="{Binding Specification}" 
+
+                                            <TextBlock Text="{Binding Especificaciones}" 
                                                       FontSize="11" Foreground="#95A5A6"
                                                       TextWrapping="Wrap" Margin="0,5,0,0"/>
                                         </StackPanel>
 
                                         <Border Grid.Row="2" Background="#1ABC9C" 
                                                Margin="10,5" CornerRadius="3">
-                                            <TextBlock Text="{Binding Price, StringFormat='{}{0:C}'}" 
+                                            <TextBlock Text="{Binding Precio, StringFormat='{}{0:C}'}" 
                                                       Foreground="White" FontWeight="Bold"
                                                       FontSize="16" TextAlignment="Center"
                                                       Padding="5"/>
@@ -173,14 +175,11 @@
 
                                         <StackPanel Grid.Row="3" Orientation="Horizontal" 
                                                    Margin="10" HorizontalAlignment="Center">
-                                            <Button Content="🛒 Carrito" 
+                                            <Button x:Name="AgrCarrito" Content="🛒 Carrito" 
                                                    Background="#3498DB" Foreground="White"
                                                    BorderThickness="0" Padding="15,5"
-                                                   FontSize="12" Cursor="Hand"/>
-                                            <Button Content="👀 Ver" 
-                                                   Background="#95A5A6" Foreground="White"
-                                                   BorderThickness="0" Padding="15,5" 
-                                                   Margin="5,0,0,0" FontSize="12" Cursor="Hand"/>
+                                                   FontSize="12" Cursor="Hand"
+                                                   Click="AgrCarrito_Click"/>
                                         </StackPanel>
                                     </Grid>
                                 </Border>

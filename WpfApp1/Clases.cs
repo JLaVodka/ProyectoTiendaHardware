@@ -7,6 +7,7 @@ using System.Linq;
 
 namespace WpfApp1
 {
+    // ==================== CLASE PRODUCTO ====================
     public class Producto : INotifyPropertyChanged
     {
         private int _id;
@@ -68,39 +69,7 @@ namespace WpfApp1
         }
     }
 
-    public class Categoria
-    {
-        public int Id { get; set; }
-        public string Nombre { get; set; }
-    }
-
-    public class Cliente
-    {
-        public int Id { get; set; }
-        public string Nombre { get; set; }
-        public string Email { get; set; }
-        public string Telefono { get; set; }
-        public string Direccion { get; set; }
-    }
-
-    public class Pedido
-    {
-        public int Id { get; set; }
-        public int ClienteId { get; set; }
-        public DateTime FechaPedido { get; set; }
-        public decimal Total { get; set; }
-        public string Estado { get; set; }
-    }
-
-    public class DetallePedido
-    {
-        public int Id { get; set; }
-        public int PedidoId { get; set; }
-        public int ProductoId { get; set; }
-        public int Cantidad { get; set; }
-        public decimal PrecioUnitario { get; set; }
-    }
-
+    // ==================== CLASE CARRITO ITEM ====================
     public class CarritoItem : INotifyPropertyChanged
     {
         private int _cantidad;
@@ -124,6 +93,7 @@ namespace WpfApp1
         }
     }
 
+    // ==================== CONEXIÓN A BASE DE DATOS ====================
     public class DatabaseConnection
     {
         private readonly string _connectionString;
@@ -139,6 +109,7 @@ namespace WpfApp1
         }
     }
 
+    // ==================== REPOSITORIO DE PRODUCTOS ====================
     public class ProductoRepository
     {
         private readonly DatabaseConnection _dbConnection;
@@ -148,6 +119,7 @@ namespace WpfApp1
             _dbConnection = new DatabaseConnection();
         }
 
+        // 🔥 MÉTODO CLAVE: Obtener todos los productos de la BD
         public List<Producto> GetAllProductos()
         {
             var productos = new List<Producto>();
@@ -157,6 +129,7 @@ namespace WpfApp1
                 try
                 {
                     connection.Open();
+                    // 🔥 IMPORTANTE: Usar los nombres exactos de tus columnas
                     string query = "SELECT id_producto, nombre_productos, precio, categoria, especificaciones, stock_producto, marca_productos FROM productos";
 
                     using (var command = new MySqlCommand(query, connection))
@@ -185,38 +158,6 @@ namespace WpfApp1
                 }
             }
             return productos;
-        }
-
-        public Producto GetProductoById(int id)
-        {
-            using (var connection = _dbConnection.GetConnection())
-            {
-                connection.Open();
-                string query = "SELECT id_producto, nombre_productos, precio, categoria, especificaciones, stock_producto, marca_productos FROM productos WHERE id_producto = @id";
-
-                using (var command = new MySqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@id", id);
-
-                    using (var reader = command.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            return new Producto
-                            {
-                                Id = reader.GetInt32("id_producto"),
-                                Nombre = reader.GetString("nombre_productos"),
-                                Marca = reader.GetString("marca_productos"),
-                                Categoria = reader.GetString("categoria"),
-                                Precio = reader.GetDecimal("precio"),
-                                Especificaciones = reader.GetString("especificaciones"),
-                                Stock = reader.GetInt32("stock_producto")
-                            };
-                        }
-                    }
-                }
-            }
-            return null;
         }
 
         public List<Producto> GetProductosByCategoria(string categoria)
@@ -252,112 +193,9 @@ namespace WpfApp1
             }
             return productos;
         }
-
-        public void AddProducto(Producto producto)
-        {
-            using (var connection = _dbConnection.GetConnection())
-            {
-                connection.Open();
-                string query = @"INSERT INTO productos 
-                               (nombre_productos, marca_productos, categoria, precio, especificaciones, stock_producto) 
-                               VALUES (@nombre, @marca, @categoria, @precio, @especificaciones, @stock)";
-
-                using (var command = new MySqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@nombre", producto.Nombre);
-                    command.Parameters.AddWithValue("@marca", producto.Marca);
-                    command.Parameters.AddWithValue("@categoria", producto.Categoria);
-                    command.Parameters.AddWithValue("@precio", producto.Precio);
-                    command.Parameters.AddWithValue("@especificaciones", producto.Especificaciones);
-                    command.Parameters.AddWithValue("@stock", producto.Stock);
-
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
-        public void UpdateProducto(Producto producto)
-        {
-            using (var connection = _dbConnection.GetConnection())
-            {
-                connection.Open();
-                string query = @"UPDATE productos SET 
-                               nombre_productos = @nombre, 
-                               marca_productos = @marca, 
-                               categoria = @categoria, 
-                               precio = @precio, 
-                               especificaciones = @especificaciones,
-                               stock_producto = @stock
-                               WHERE id_producto = @id";
-
-                using (var command = new MySqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@nombre", producto.Nombre);
-                    command.Parameters.AddWithValue("@marca", producto.Marca);
-                    command.Parameters.AddWithValue("@categoria", producto.Categoria);
-                    command.Parameters.AddWithValue("@precio", producto.Precio);
-                    command.Parameters.AddWithValue("@especificaciones", producto.Especificaciones);
-                    command.Parameters.AddWithValue("@stock", producto.Stock);
-                    command.Parameters.AddWithValue("@id", producto.Id);
-
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
-        public void DeleteProducto(int id)
-        {
-            using (var connection = _dbConnection.GetConnection())
-            {
-                connection.Open();
-                string query = "DELETE FROM productos WHERE id_producto = @id";
-
-                using (var command = new MySqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@id", id);
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
     }
 
-    public class CategoriaRepository
-    {
-        private readonly DatabaseConnection _dbConnection;
-
-        public CategoriaRepository()
-        {
-            _dbConnection = new DatabaseConnection();
-        }
-
-        public List<Categoria> GetAllCategorias()
-        {
-            var categorias = new List<Categoria>();
-
-            using (var connection = _dbConnection.GetConnection())
-            {
-                connection.Open();
-                string query = "SELECT * FROM categorias";
-
-                using (var command = new MySqlCommand(query, connection))
-                {
-                    using (var reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            categorias.Add(new Categoria
-                            {
-                                Id = reader.GetInt32("id"),
-                                Nombre = reader.GetString("nombre")
-                            });
-                        }
-                    }
-                }
-            }
-            return categorias;
-        }
-    }
-
+    // ==================== VIEW MODEL PRINCIPAL ====================
     public class ProductoViewModel : INotifyPropertyChanged
     {
         private readonly ProductoRepository _productoRepository;
@@ -406,6 +244,7 @@ namespace WpfApp1
 
         public decimal TotalCarrito => Carrito.Sum(item => item.Subtotal);
 
+        // 🔥 MÉTODO CLAVE: Cargar productos desde la BD
         private void CargarProductos()
         {
             Productos = new ObservableCollection<Producto>(_productoRepository.GetAllProductos());
@@ -424,6 +263,7 @@ namespace WpfApp1
             }
         }
 
+        // 🔥 MÉTODO CLAVE: Agregar productos al carrito
         public void AgregarAlCarrito(Producto producto, int cantidad = 1)
         {
             var itemExistente = Carrito.Find(item => item.ProductoId == producto.Id);
@@ -444,18 +284,6 @@ namespace WpfApp1
             OnPropertyChanged(nameof(Carrito));
             OnPropertyChanged(nameof(TotalCarrito));
             ItemsCarrito = Carrito.Sum(item => item.Cantidad);
-        }
-
-        public void RemoverDelCarrito(int productoId)
-        {
-            var item = Carrito.Find(i => i.ProductoId == productoId);
-            if (item != null)
-            {
-                Carrito.Remove(item);
-                OnPropertyChanged(nameof(Carrito));
-                OnPropertyChanged(nameof(TotalCarrito));
-                ItemsCarrito = Carrito.Sum(Item => item.Cantidad);
-            }
         }
 
         public void LimpiarCarrito()

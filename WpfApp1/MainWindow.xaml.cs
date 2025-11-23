@@ -2,6 +2,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace WpfApp1
 {
@@ -23,9 +24,7 @@ namespace WpfApp1
             DataContext = this;
         }
 
-        
-
-
+        // Cargar productos desde MySQL
         private void LoadProductsFromDatabase()
         {
             Products.Clear();
@@ -68,126 +67,121 @@ namespace WpfApp1
             }
         }
 
-        private void CargarProductos()
+        // AGREGAR AL CARRITO
+        private void AgrCarrito_Click(object sender, RoutedEventArgs e)
         {
-            ProductsItemsControl.ItemsSource = _viewModel.Productos;
-        }
-        private void MostrarMensajeFiltro(string categoria)
-        {
-            this.Title = $"TechHardware Store - {categoria}";
-        }
+            var button = sender as Button;
 
-        private void FiltGPU_Selected(object sender, RoutedEventArgs e)
-        {
-            // Filtrar por todas las GPUs
-            LoadProductsFromDatabase();
-            MostrarMensajeFiltro("GPU");
-        }
-
-        private void FiltCPU_Selected(object sender, RoutedEventArgs e)
-        {
-            FiltrarPorCategoria("CPU");
-        }
-
-        private void FiltRAM_Selected(object sender, RoutedEventArgs e)
-        {
-            FiltrarPorCategoria("RAM");
-        }
-
-        private void FiltMthr_Selected(object sender, RoutedEventArgs e)
-        {
-            FiltrarPorCategoria("Motherboard");
-        }
-
-        private void FiltSSD_Selected(object sender, RoutedEventArgs e)
-        {
-            FiltrarPorCategoria("SSD");
-        }
-
-        private void FiltMon_Selected(object sender, RoutedEventArgs e)
-        {
-            FiltrarPorCategoria("Monitores");
-        }
-
-        private void FiltrarPorCategoria(string categoria)
-        {
-            var productosFiltrados = new ObservableCollection<Producto>();
-
-            foreach (var producto in Products)
+            if (button != null)
             {
-                if (producto.Categoria?.Equals(categoria, StringComparison.OrdinalIgnoreCase) == true)
+                var producto = button.DataContext as Producto;
+
+                if (producto != null)
                 {
-                    productosFiltrados.Add(producto);
+                    _viewModel.AgregarAlCarrito(producto);
+                    Carrito.Content = $"🛒 Carrito ({_viewModel.ItemsCarrito})";
+
+                    MessageBox.Show(
+                        $"Producto \"{producto.Nombre}\" agregado al carrito.",
+                        "Carrito",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
                 }
             }
-
-            ProductsItemsControl.ItemsSource = productosFiltrados;
-            MostrarMensajeFiltro(categoria);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            LoadProductsFromDatabase();
-            MostrarMensajeFiltro("Todos los productos");
-        }
-
-        private void BtnProductos_Click(object sender, RoutedEventArgs e)
-        {
-            LoadProductsFromDatabase();
-            MostrarMensajeFiltro("Todos los productos");
-        }
-
-        private void BtnOfertas_Click(object sender, RoutedEventArgs e)
-        {
-            var productosOferta = new ObservableCollection<Producto>();
-
-            foreach (var producto in Products)
-            {
-                if (producto.Precio < 300)
-                {
-                    productosOferta.Add(producto);
-                }
-            }
-
-            ProductsItemsControl.ItemsSource = productosOferta;
-            MostrarMensajeFiltro("Ofertas Especiales");
-
-            MessageBox.Show($"Mostrando {productosOferta.Count} productos en oferta",
-                          "Ofertas", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        private void BtnContacto_Click(object sender, RoutedEventArgs e)
-        {
-            string infoContacto = "🛠️ TechHardware Store\n\n" +
-                                 "📧 Email: info@techhardware.com\n" +
-                                 "📞 Teléfono: +57 302 554 1514\n" +
-                                 "📍 Dirección: Calle Tecnología 123\n" +
-                                 "🕒 Horario: Lunes a Viernes 9:00 - 18:00\n\n" +
-                                 "¡Estamos aquí para ayudarte!";
-            MessageBox.Show(infoContacto, "Información de Contacto",
-                          MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
+        // MOSTRAR CARRITO
         private void Carrito_Click(object sender, RoutedEventArgs e)
         {
             if (_viewModel.Carrito.Count == 0)
             {
-                MessageBox.Show("🛒 Tu carrito está vacío",
-                              "Carrito", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("🛒 Tu carrito está vacío");
                 return;
             }
 
-            string contenidoCarrito = "🛒 MI CARRITO\n\n";
+            string contenido = "🛒 MI CARRITO\n\n";
+
             foreach (var item in _viewModel.Carrito)
             {
-                contenidoCarrito += $"{item.Nombre}\n";
-                contenidoCarrito += $"Cantidad: {item.Cantidad} - {item.Subtotal:C}\n\n";
+                contenido += $"{item.Nombre}\n";
+                contenido += $"Cantidad: {item.Cantidad} | Total: {item.Subtotal:C}\n\n";
             }
-            contenidoCarrito += $"TOTAL: {_viewModel.TotalCarrito:C}";
 
-            MessageBox.Show(contenidoCarrito, "Mi Carrito",
-                          MessageBoxButton.OK, MessageBoxImage.Information);
+            contenido += $"TOTAL: {_viewModel.TotalCarrito:C}";
 
+            MessageBox.Show(contenido);
+        }
+
+        // Botón Inicio — Recargar todo
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            LoadProductsFromDatabase();
+        }
+
+        // FILTROS DE CATEGORÍA
+        private void FiltGPU_Selected(object sender, RoutedEventArgs e) => FiltrarPorCategoria("GPU");
+        private void FiltCPU_Selected(object sender, RoutedEventArgs e) => FiltrarPorCategoria("CPU");
+        private void FiltRAM_Selected(object sender, RoutedEventArgs e) => FiltrarPorCategoria("RAM");
+        private void FiltMthr_Selected(object sender, RoutedEventArgs e) => FiltrarPorCategoria("Motherboard");
+        private void FiltSSD_Selected(object sender, RoutedEventArgs e) => FiltrarPorCategoria("SSD");
+        private void FiltMon_Selected(object sender, RoutedEventArgs e) => FiltrarPorCategoria("Monitor");
+
+        private void FiltrarPorCategoria(string categoria)
+        {
+            var lista = new ObservableCollection<Producto>();
+
+            foreach (var p in Products)
+            {
+                if (p.Categoria.Equals(categoria, StringComparison.OrdinalIgnoreCase))
+                    lista.Add(p);
+            }
+
+            ProductsItemsControl.ItemsSource = lista;
+        }
+
+        // SLIDER DE PRECIO
+        private void PrecioSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (Monto != null)
+            {
+                decimal valor = (decimal)e.NewValue;
+                Monto.Text = $"${valor:N0}";
+                FiltrarPorPrecioMaximo(valor);
+            }
+        }
+
+        private void FiltrarPorPrecioMaximo(decimal max)
+        {
+            var lista = new ObservableCollection<Producto>();
+
+            foreach (var p in Products)
+            {
+                if (p.Precio <= max)
+                    lista.Add(p);
+            }
+
+            ProductsItemsControl.ItemsSource = lista;
+        }
+
+        // BOTÓN CONTACTO
+        private void BtnContacto_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Correo: info@techhardware.com\nTel: +57 302 554 1514");
+        }
+
+        // BOTÓN OFERTAS
+        private void BtnOfertas_Click(object sender, RoutedEventArgs e)
+        {
+            var lista = new ObservableCollection<Producto>();
+
+            foreach (var p in Products)
+            {
+                if (p.Precio < 300000)
+                    lista.Add(p);
+            }
+
+            ProductsItemsControl.ItemsSource = lista;
         }
     }
 }
